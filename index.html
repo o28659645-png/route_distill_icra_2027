@@ -74,7 +74,7 @@
               
               <!-- PDF Link. -->
               <span class="link-block">
-                <a href="./static/pdf/DACT_ICRA_2027.pdf"
+                <a href="./static/pdf/SkillRouting_ICRA_2027.pdf"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fas fa-file-pdf"></i>
@@ -85,7 +85,7 @@
 
               <!-- Supp Material Link -->
               <span class="link-block">
-                <a href="./static/pdf/DACT_ICRA_2027_Supp.pdf"
+                <a href="./static/pdf/SkillRouting_ICRA_2027_Supp.pdf"
                    class="external-link button is-normal is-rounded is-dark">
                    <span class="icon">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="24" height="24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -137,6 +137,14 @@
         <h2 class="title is-2">Abstract</h2>
         <div class="content has-text-justified">
           <p>
+            Integrating visual locomotion skills enables quadrupeds to traverse diverse obstacles, but distilling specialist behaviors into a unified policy requires additional simulated rollouts and policy optimization.
+            We ask how simply an existing specialist library can be integrated while retaining locomotion capability.
+            We investigate lightweight terrain-based routing that composes frozen specialists through a supervised classifier trained on terrain-labeled trajectories, requiring no additional locomotion-policy optimization.
+            Using the same specialist library, we compare routing with a DAgger-style distilled controller and ground-truth routing.
+            Within the routing framework, we examine geometric depth features and a raw-depth convolutional network paired with instantaneous selection, exponential moving averaging, or Bayesian filtering.
+            Experiments connect offline recognition, sequential selection, and closed-loop simulated locomotion, revealing that stronger classification accuracy and switching stability do not necessarily predict better locomotion performance.
+            On held-out mixed-terrain courses, the best evaluated router achieves 92.6% episodic success, compared with 74.3% for the evaluated distilled checkpoint and 99.1% for ground-truth routing.
+            These results support simple post-hoc routing as a practical integration alternative and emphasize the importance of evaluating perception and temporal selection through their closed-loop consequences.
           </p>
         </div>
       </div>
@@ -168,13 +176,28 @@
             <div class="column">
               <h4 class="title is-2 has-text-centered">Motivation</h4>
               <div class="has-text-centered">
-                <!-- <img src="./static/images/DACT_ICRA_Figure_One.png"
+                <img src="./static/images/route_distill_figure_one_updated.png"
                       class="interpolation-image"
                       alt="Interpolate start reference image."
-                      width="80%" /> -->
+                      width="60%" />
               </div>
                 <p>
-                  </p>
+                  Quadruped robots have demonstrated remarkable advances in mobility driven by their potential to operate in unstructured environments.
+                  Quadruped robots operating in such environments must negotiate qualitatively distinct obstacles. 
+                  Jumping over gaps in the terrain require controlled takeoff and landing, raised obstacles require climbing and descent, and stairs require repeated contact transitions. 
+                  A useful robot must respond to the environment along a route by combining these capabilities during deployment using onboard perception.
+                  Therefore, learning specialized visual locomotion skills is only part of the problem; the system must also determine which skill to execute and when. 
+                  Once specialist policies have acquired these capabilities, the remaining problem is integration; should their behaviors be consolidated into a new policy, or can they be retained and selected through a simple routing layer?
+                
+                  Recent works have explored an increasing popular training paradigm: multi-skill policy distillation; which consolidates specialist behavior into a single, unified policy through additional online, supervised training.
+                  This produces a single deployable policy but requires an additional round of expensive simulated training and optimization. 
+                  At the same time, matching specialist outputs during training does not guarantee preservation of their closed-loop performance. 
+                  Moreover, an existing specialist library also enables a simpler integration strategy: learn which policy to execute while retaining the specialists themselves. 
+                  Skill selection/routing avoids further locomotion-policy optimization, although it still requires training a selector and managing the transitions between skills. 
+                  In this work, we ask whether lightweight post-hoc routing provides a simple and practical alternative to distillation for integrating an existing library of visual locomotion skills?
+                  We examine this question through both locomotion performance and integration effort: wherein routing retains the specialist library and adds a selector and distillation consolidates behavior into one policy. 
+                  Consequently, potential savings in data collection and training must be considered alongside inference and memory costs at deployment.
+                </p>
               </div>
 
           </div>
@@ -195,22 +218,27 @@
             <!-- Approach. -->
             <div class="column">
               <div class="content">
-                <h3 class="title is-2 has-text-centered">DACT Approach</h3>
+                <h3 class="title is-2 has-text-centered"></h3>
                 <div class="has-text-centered">
-                  <img src="./static/images/approach_figure_V04.png"
+                  <img src="./static/images/route_or_distill.png"
                         class="interpolation-image"
                         alt="Interpolate start reference image."
-                        width="55%" />
-                <!-- </div>
-                <p>
-                  We present the <em><b>F</b>orward <b>L</b>ooking <b>A</b>daptation to Dynamic <b>P</b>ayloads</em> (FLAP) method for real-time adaptation of quadruped locomotion controllers to dynamic payloads. 
-                  FLAP enables proactive compensation for anticipated locomotion discrepancies caused by shifting payload mass distributions through a physics-informed neural network (PINN) that is designed to 
-                  model the robotic system's forward dynamics. The PINN simultaneously predicts the evolution of the robot's whole body state and the payload-induced forces and torques acting on the robot, while 
-                  a physics-informed loss function ensures the predictions respect the dynamics of the quadruped. Through PINN, FLAP is able to learn a physically plausible forward dynamics model that generalizes 
-                  well to novel states. The learned dynamics are then integrated into a composite adaptive control law that enables rapid, anticipatory joint-torque compensation in real time during real-world execution.
-                  Through integrating physics-informed learning with adaptive control, FLAP enables robust quadruped locomotion with effective adaptation to dynamic payloads, such as liquids.
-                </p>
-              </div> -->
+                        width="80%" />
+                </div>
+                  <p>
+                    We investigate lightweight terrain-based routing as a simple alternative to distilling an existing library of locomotion specialists into a unified policy.
+                    Our routed system composes frozen specialists through a supervised classifier trained on terrain-labeled simulation trajectories, requiring no additional locomotion-policy optimization.
+                    Through matched comparisons of geometric depth features and a raw-depth CNN, each paired with instantaneous selection, exponential moving averaging, or Bayesian filtering, we examine how perception and temporal processing affect routing.
+                    These choices intentionally keep the integration pipeline simple.
+                    Although more sophisticated learning frameworks could support richer skill-selection behavior, our goal is to determine whether simple classifiers and lightweight post-hoc temporal processing suffice to match or exceed the locomotion performance of the evaluated distilled controller, while measuring the integration and inference costs of both approaches.
+
+                    In our experiments, we connect instantaneous classification, sequential selection, and closed-loop locomotion, showing that stronger offline recognition and switching metrics do not necessarily yield better locomotion performance. 
+                    Same-trajectory replay and transition-aligned analysis investigate this discrepancy through the stability, anticipation, and responsiveness of skill selection. 
+                    Finally, we compare routed specialists with ground-truth routing and a distilled controller built from the same specialist library across held-out terrain sequences and difficulty levels. 
+                    By jointly evaluating locomotion performance, routing behavior, deployment inference cost, and additional data-collection and training costs, we characterize when simple post-hoc routing provides a practical alternative to multi-skill distillation.
+                    Our findings suggest that such systems serves as a viable alternative to unified policy distillation for complex visual locomotion tasks and deserves further investigation. 
+                  </p>
+              </div>
             </div>
           </div>
         </div>
